@@ -1,0 +1,15 @@
+In order to configure Outlook (classic) to run the series of commands, you need to put this into the VBA macro thingy and edit the {WritePathTo} to point to where you have the repo lying on your computer:
+
+Public WithEvents InboxItems As Outlook.Items
+
+Private Sub Application_StartUp()
+    Set InboxItems = Session.GetDefaultFolder(olFolderInbox).Items
+End Sub
+
+Private Sub InboxItems_ItemAdd(ByVal Item As Object)
+    If TypeOf Item Is Outlook.MailItem Then
+        Dim mail As Outlook.MailItem
+        Set mail = Item
+        Shell "cmd /c cd /d ""{WritePathTo}\AiEmailsIntegration"" && node ""src\index.js"" " & mail.EntryID, vbHide
+    End If
+End Sub
