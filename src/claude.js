@@ -12,7 +12,7 @@ export async function labelEmail(labelChoices, email)
         messages: [
             {
                 role: "user",
-                content: `Subject: ${email.subject}\n\nBody: ${email.body}`
+                content: `Subject: ${email.subject}\n\nBody: ${email.body.content}`
             }
         ]
     });
