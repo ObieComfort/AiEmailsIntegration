@@ -26,7 +26,7 @@ export async function translateEntryID(userEmail, entryID) {
             method: 'POST',
             headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'},
             body: JSON.stringify({
-                inputIds: [entryID],
+                inputIds: [hexToGraphFormat(entryID)],
                 sourceIdType: 'entryId',
                 targetIdType: 'restId'
             })
@@ -55,12 +55,13 @@ export async function setEmailLabel(userEmail, messageID, label) {
         const err = await res.text();
         throw new Error(`Failed to set label: ${res.status} - ${err}`);
     }
+    console.log("Set Label: " + label);
 }
 
 export async function getEmailByID(userEmail, messageID) {
     const token = await getAccessToken();
     const res = await fetch(
-        `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${messageID}?$select=subject,uniqueBody`,
+        `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${messageID}?$select=subject,body`,
         { headers: { Authorization: `Bearer ${token}`, Prefer: 'outlook.body-content-type="text"' } }
     );
     return res.json();
@@ -76,7 +77,7 @@ export async function listRecentMessages(userEmail, top = 5) {
   return data.value;
 }
 
-export async function hexToGraphFormat(hexID) {
+export function hexToGraphFormat(hexID) {
     const bytes = Buffer.from(hexID, 'hex');
     let base64 = bytes.toString('base64');
     const paddingCount = (base64.match(/=+$/) || [''])[0].length;
